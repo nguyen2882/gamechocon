@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bé Vui Học - Trò Chơi Phát Triển Ngôn Ngữ & Trí Tuệ Cho Bé 3 Tuổi</title>
+    <meta name="description" content="Ứng dụng trò chơi tương tác giáo dục sớm cho trẻ 3 tuổi: học từ vựng, luyện phát âm, ghép hình và rèn luyện tư duy logic.">
+    <!-- Phông chữ Google Fonts thân thiện với trẻ thơ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+    <!-- Đám mây trôi nhẹ nhàng làm phông nền -->
+    <div class="cloud-bg">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
+
+    <!-- Canvas pháo hoa Confetti khi bé thắng -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <div id="app-container">
+
+        <!-- ================== THANH ĐIỀU HƯỚNG TRÊN CÙNG ================== -->
+        <header class="top-bar">
+            <div class="brand-badge btn-back-menu" title="Về trang chủ">
+                <span class="brand-icon">🐣</span>
+                <span class="brand-title">BÉ VUI HỌC</span>
+            </div>
+
+            <div class="top-actions">
+                <!-- Bộ đếm sao thưởng -->
+                <div class="star-counter" id="btn-stickers" title="Xem bộ sưu tập huy hiệu">
+                    <span class="star-icon">⭐</span>
+                    <span id="star-count">0</span>
+                </div>
+
+                <!-- Bật / Tắt nhạc nền hộp nhạc -->
+                <button class="btn-circle" id="btn-bgm" title="Bật/Tắt nhạc nền">🎵</button>
+
+                <!-- Bật / Tắt tiếng hiệu ứng -->
+                <button class="btn-circle" id="btn-sound" title="Bật/Tắt âm thanh">🔊</button>
+            </div>
+        </header>
+
+        <!-- ================== 1. MÀN HÌNH CHÍNH (MENU) ================== -->
+        <main id="screen-menu" class="screen-view active">
+            <section class="hero-banner">
+                <div class="hero-mascot">🐻</div>
+                <h1 class="hero-title">Chào Bé Yêu!</h1>
+                <p class="hero-subtitle">Hôm nay chúng mình cùng học nói và khám phá nhé!</p>
+            </section>
+
+            <section class="games-grid">
+                <!-- Trò 1: Bé tập nói & học từ vựng -->
+                <div class="game-card card-vocab" data-screen="flashcards">
+                    <div class="card-icon">🎙️</div>
+                    <h2 class="card-title">Bé Tập Nói</h2>
+                    <p class="card-desc">Học từ mới & nói cùng Micro ma thuật</p>
+                </div>
+
+                <!-- Trò 2: Ghép bóng ma thuật -->
+                <div class="game-card card-shadow" data-screen="shadow">
+                    <div class="card-icon">🕵️‍♂️</div>
+                    <h2 class="card-title">Ghép Bóng Bí Mật</h2>
+                    <p class="card-desc">Tìm hình khớp với bóng đen ngộ nghĩnh</p>
+                </div>
+
+                <!-- Trò 3: Bé nhanh trí (Quiz & Phân loại) -->
+                <div class="game-card card-smart" data-screen="quiz">
+                    <div class="card-icon">💡</div>
+                    <h2 class="card-title">Bé Nhanh Trí</h2>
+                    <p class="card-desc">Đố vui thông minh, tìm bạn giỏi nhất</p>
+                </div>
+
+                <!-- Trò 4: Lật hình tìm cặp -->
+                <div class="game-card card-memory" data-screen="memory">
+                    <div class="card-icon">🎴</div>
+                    <h2 class="card-title">Tìm Đôi Bạn</h2>
+                    <p class="card-desc">Lật thẻ thông minh rèn luyện trí nhớ</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- ================== 2. MÀN HÌNH BÉ TẬP NÓI (FLASHCARDS) ================== -->
+        <section id="screen-flashcards" class="screen-view">
+            <div class="screen-header">
+                <button class="btn-kid btn-kid-yellow btn-back-menu">⬅️ Quay lại</button>
+                <div class="screen-title">🗣️ Bé Tập Nói & Học Từ</div>
+                <div style="width: 80px;"></div>
+            </div>
+
+            <!-- Phân loại chủ đề -->
+            <div class="category-tabs">
+                <button class="cat-tab active" data-cat="animals">🐶 Động Vật</button>
+                <button class="cat-tab" data-cat="fruits">🍎 Hoa Quả</button>
+                <button class="cat-tab" data-cat="vehicles">🚗 Xe Cộ</button>
+                <button class="cat-tab" data-cat="shapes">🎨 Hình & Màu</button>
+            </div>
+
+            <!-- Thẻ từ vựng khổng lồ -->
+            <div class="flashcard-stage">
+                <div class="flashcard-main-display" id="flashcard-display" title="Bấm để nghe đọc lại">
+                    <div class="flashcard-big-icon" id="flashcard-icon">🐶</div>
+                </div>
+
+                <div class="flashcard-word-vi" id="flashcard-word-vi">Con Chó</div>
+                <div class="flashcard-word-en" id="flashcard-word-en">Dog</div>
+                <div class="flashcard-sound-tag" id="flashcard-sound-tag">Âm thanh: Gâu gâu!</div>
+
+                <!-- Điều hướng & Micro thần kỳ -->
+                <div class="flashcard-controls">
+                    <button class="carousel-nav-btn" id="btn-prev-card" title="Từ trước">👈</button>
+                    
+                    <!-- Nút Micro to tròn nổi bật -->
+                    <button class="btn-magic-mic" id="btn-magic-mic" title="Bấm vào để nói cùng bạn">
+                        🎤
+                    </button>
+
+                    <button class="carousel-nav-btn" id="btn-next-card" title="Từ tiếp theo">👉</button>
+                </div>
+
+                <div class="mic-hint-box" id="mic-hint-text">Bấm Micro và đọc to tên bạn này nhé!</div>
+            </div>
+        </section>
+
+        <!-- ================== 3. MÀN HÌNH GHÉP BÓNG ================== -->
+        <section id="screen-shadow" class="screen-view">
+            <div class="screen-header">
+                <button class="btn-kid btn-kid-yellow btn-back-menu">⬅️ Quay lại</button>
+                <div class="screen-title">🕵️‍♂️ Ghép Bóng Ma Thuật</div>
+                <div style="width: 80px;"></div>
+            </div>
+
+            <div class="shadow-game-box">
+                <div class="shadow-prompt">Bé hãy chọn hình thật để ghép vào bóng đen nhé!</div>
+                
+                <!-- Khu vực các ô bóng màu xám -->
+                <div class="shadow-target-area" id="shadow-targets"></div>
+
+                <!-- Khu vực các lựa chọn đầy màu sắc -->
+                <div class="shadow-options-grid" id="shadow-options"></div>
+            </div>
+        </section>
+
+        <!-- ================== 4. MÀN HÌNH BÉ NHANH TRÍ (QUIZ) ================== -->
+        <section id="screen-quiz" class="screen-view">
+            <div class="screen-header">
+                <button class="btn-kid btn-kid-yellow btn-back-menu">⬅️ Quay lại</button>
+                <div class="screen-title">💡 Bé Nhanh Trí</div>
+                <div style="width: 80px;"></div>
+            </div>
+
+            <div class="quiz-container">
+                <button class="quiz-speaker-btn" id="btn-quiz-speak">
+                    <span>🔊</span> Nghe lại câu hỏi
+                </button>
+
+                <div class="quiz-question-text" id="quiz-question-text">
+                    Đâu là quả Táo màu đỏ?
+                </div>
+
+                <div class="quiz-choices-grid" id="quiz-choices-grid">
+                    <!-- Các lựa chọn sẽ tự động sinh ra -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================== 5. MÀN HÌNH LẬT THẺ TÌM CẶP ================== -->
+        <section id="screen-memory" class="screen-view">
+            <div class="screen-header">
+                <button class="btn-kid btn-kid-yellow btn-back-menu">⬅️ Quay lại</button>
+                <div class="screen-title">🎴 Tìm Đôi Bạn Giống Nhau</div>
+                <div style="width: 80px;"></div>
+            </div>
+
+            <div style="text-align: center; font-size: 1.25rem; font-weight: 800; color: #57606F; margin-bottom: 12px;">
+                Bé hãy lật 2 thẻ giống nhau để mở khóa nhé!
+            </div>
+
+            <div class="memory-board" id="memory-board">
+                <!-- 4 thẻ trò chơi -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ================== MODAL BỘ SƯU TẬP HUY HIỆU ================== -->
+    <div class="modal-overlay" id="modal-stickers">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="btn-close-sticker">✕</button>
+            <h2 style="font-family: var(--font-heading); color: #FF9F43; margin-bottom: 8px;">
+                🏆 Bộ Sưu Tập Của Bé
+            </h2>
+            <p style="color: #747D8C; font-weight: 700;">
+                Bé chăm học và phát âm để mở khóa thật nhiều huy hiệu nhé!
+            </p>
+
+            <div class="sticker-grid" id="sticker-album-grid">
+                <!-- Sinh tự động từ data.js -->
+            </div>
+
+            <button class="btn-kid btn-kid-primary" onclick="document.getElementById('modal-stickers').classList.remove('active')">
+                Tiếp tục chơi nào! ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- Nhúng các script logic -->
+    <script src="data.js"></script>
+    <script src="audio.js"></script>
+    <script src="speech.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
