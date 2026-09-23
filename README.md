@@ -16,7 +16,7 @@ Chỉ cần nhấp đúp vào file `index.html` để mở trên bất kỳ trì
 ### 2. Chạy qua máy chủ nội bộ (Local Server)
 Nếu muốn cấp quyền Microphone tốt nhất hoặc mở trên điện thoại/iPad trong cùng mạng Wi-Fi:
 ```bash
-node server.js
+node scripts/local-server.js
 ```
 Truy cập:
 - Trên máy tính: `http://localhost:3000`
